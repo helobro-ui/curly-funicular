@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Teyvat Tactics — Genshin Impact Strategy Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --gold: #c8a96e;
+    --gold-light: #f0d9a0;
+    --gold-dark: #8a6f3d;
+    --deep: #0d0f1a;
+    --deep2: #12152a;
+    --deep3: #1a1e35;
+    --panel: #1e2240;
+    --panel2: #252a4a;
+    --accent: #5b9bd5;
+    --accent2: #7ec8e3;
+    --pyro: #e8604c;
+    --hydro: #4da6d9;
+    --electro: #b06cd4;
+    --cryo: #7ecde8;
+    --anemo: #5dc9a4;
+    --geo: #d4a94c;
+    --dendro: #7cb84a;
+    --text: #e8e4d8;
+    --text-muted: #9a97b0;
+    --border: rgba(200,169,110,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(91,155,213,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(176,108,212,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 0%, rgba(200,169,110,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+  }
+
+  .hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 700;
+    color: var(--gold-light);
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 0 60px rgba(200,169,110,0.3);
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--deep);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-dark);
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  }
+
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold-light); transform: translateY(-1px); }
+
+  /* Element badges */
+  .element-bar {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .el-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .el-badge:hover { opacity: 0.85; transform: translateY(-2px); }
+  .el-pyro   { color: var(--pyro);   border-color: rgba(232,96,76,0.4);  background: rgba(232,96,76,0.08); }
+  .el-hydro  { color: var(--hydro);  border-color: rgba(77,166,217,0.4); background: rgba(77,166,217,0.08); }
+  .el-electro{ color: var(--electro);border-color: rgba(176,108,212,0.4);background: rgba(176,108,212,0.08);}
+  .el-cryo   { color: var(--cryo);   border-color: rgba(126,205,232,0.4);background: rgba(126,205,232,0.08);}
+  .el-anemo  { color: var(--anemo);  border-color: rgba(93,201,164,0.4); background: rgba(93,201,164,0.08);}
+  .el-geo    { color: var(--geo);    border-color: rgba(212,169,76,0.4); background: rgba(212,169,76,0.08);}
+  .el-dendro { color: var(--dendro); border-color: rgba(124,184,74,0.4); background: rgba(124,184,74,0.08);}
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  section { margin-bottom: 4rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .section-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(200,169,110,0.5);
+  }
+
+  .card-header {
+    padding: 1.2rem 1.4rem 0.8rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .card-title-group h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--gold-light);
+    margin-bottom: 0.25rem;
+  }
+
+  .card-title-group span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .card-body {
+    padding: 0 1.4rem 1.4rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0 1.4rem 1.4rem;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── REACTION TABLE ── */
+  .reaction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .reaction-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem;
+  }
+
+  .reaction-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--gold-light);
+    margin-bottom: 0.4rem;
+  }
+
+  .reaction-formula {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+  }
+
+  .reaction-desc {
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── TEAM COMPS ── */
+  .team-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .team-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+  }
+
+  .team-tier {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.7rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .tier-s { background: rgba(232,96,76,0.15); color: var(--pyro); border: 1px solid rgba(232,96,76,0.3); }
+  .tier-a { background: rgba(200,169,110,0.12); color: var(--gold); border: 1px solid rgba(200,169,110,0.3); }
+  .tier-b { background: rgba(126,205,232,0.1); color: var(--cryo); border: 1px solid rgba(126,205,232,0.25); }
+
+  .team-slots {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .char-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .char-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 2px solid;
+  }
+
+  .char-name {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .char-role {
+    font-size: 0.65rem;
+    color: var(--gold-dark);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .team-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* ── TIP CARDS ── */
+  .tip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .tip-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.4rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .tip-num {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    font-weight: 600;
+    flex-shrink: 0;
+    line-height: 1;
+    padding-top: 2px;
+  }
+
+  .tip-content h4 {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+
+  .tip-content p {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.8;
+  }
+
+  footer a { color: var(--gold-dark); text-decoration: none; }
+
+  /* ── DIVIDER ── */
+  .ornament {
+    text-align: center;
+    color: var(--gold-dark);
+    font-size: 1.2rem;
+    letter-spacing: 0.5em;
+    margin: 1rem 0;
+    opacity: 0.6;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero { padding: 4rem 1.2rem 3rem; }
+    main { padding: 2rem 1.2rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">⚔ Teyvat Tactics</a>
+  <ul class="nav-links">
+    <li><a href="#strategies">Strategies</a></li>
+    <li><a href="#reactions">Reactions</a></li>
+    <li><a href="#teams">Team Comps</a></li>
+    <li><a href="#tips">Pro Tips</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <p class="hero-eyebrow">✦ Genshin Impact Strategy Hub ✦</p>
+  <h1>Master Teyvat,<br/>One Guide at a Time</h1>
+  <p>From elemental reactions to Spiral Abyss clears — your complete guide to dominating every challenge in Genshin Impact.</p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="#teams">Browse Team Comps</a>
+    <a class="btn-outline" href="#reactions">Elemental Reactions</a>
+  </div>
+  <div class="element-bar">
+    <span class="el-badge el-pyro">🔥 Pyro</span>
+    <span class="el-badge el-hydro">💧 Hydro</span>
+    <span class="el-badge el-electro">⚡ Electro</span>
+    <span class="el-badge el-cryo">❄ Cryo</span>
+    <span class="el-badge el-anemo">🌀 Anemo</span>
+    <span class="el-badge el-geo">🪨 Geo</span>
+    <span class="el-badge el-dendro">🌿 Dendro</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- STRATEGY GUIDES -->
+  <section id="strategies">
+    <div class="section-header">
+      <h2>Strategy Guides</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(200,169,110,0.12);">🗡️</div>
+          <div class="card-title-group">
+            <h3>Spiral Abyss</h3>
+            <span>Endgame Content</span>
+          </div>
+        </div>
+        <div class="card-body">
+          The Spiral Abyss is the hardest content in the game. Floors 9–12 require two separate teams. Prioritize shield breakers against armored enemies and bring Anemo support for grouping.
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(232,96,76,0.12);color:var(--pyro);">Hard</span>
+          <span class="tag" style="background:rgba(200,169,110,0.1);color:var(--gold);">Two Teams</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(77,166,217,0.12);">💎</div>
+          <div class="card-title-group">
+            <h3>Artifact Farming</h3>
+            <span>Character Building</span>
+          </div>
+        </div>
+        <div class="card-body">
+          Farm the right artifact domain for your main DPS. Aim for 2-piece + 2-piece bonus first, then transition to 4-piece sets. Prioritize CRIT Rate, CRIT DMG, and ATK% substats.
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(124,184,74,0.1);color:var(--dendro);">Essential</span>
+          <span class="tag" style="background:rgba(126,205,232,0.1);color:var(--cryo);">Long-term</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(93,201,164,0.1);">🌀</div>
+          <div class="card-title-group">
+            <h3>Domain Strategies</h3>
+            <span>Resource Optimization</span>
+          </div>
+        </div>
+        <div class="card-body">
+          Always use Condensed Resin to double your domain rewards. Bring an Anemo character to group enemies for faster kills. Clear under 30 seconds for optimal runs.
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(93,201,164,0.1);color:var(--anemo);">Resin</span>
+          <span class="tag" style="background:rgba(200,169,110,0.1);color:var(--gold);">Efficiency</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(176,108,212,0.1);">⚡</div>
+          <div class="card-title-group">
+            <h3>Boss Farming</h3>
+            <span>Weekly & World Bosses</span>
+          </div>
+        </div>
+        <div class="card-body">
+          Weekly bosses reset Monday at 4 AM. Fight them early in the week. World bosses cost 40 Resin — use Condensed Resin when available. Know each boss's elemental weakness.
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(176,108,212,0.1);color:var(--electro);">Weekly</span>
+          <span class="tag" style="background:rgba(212,169,76,0.1);color:var(--geo);">Bosses</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(212,169,76,0.1);">🗺️</div>
+          <div class="card-title-group">
+            <h3>Exploration Tips</h3>
+            <span>Open World</span>
+          </div>
+        </div>
+        <div class="card-body">
+          Activate all Statues of the Seven early for stamina upgrades. Unlock all waypoints before farming. Use an Anemo character to reach high chests. Check the Seelie paths for treasure.
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(124,184,74,0.1);color:var(--dendro);">Exploration</span>
+          <span class="tag" style="background:rgba(93,201,164,0.1);color:var(--anemo);">Collectibles</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(232,96,76,0.1);">🎯</div>
+          <div class="card-title-group">
+            <h3>Resin Management</h3>
+            <span>Daily Routine</span>
+          </div>
+        </div>
+        <div class="card-body">
+          Resin caps at 200 — don't let it overflow. Do your Daily Commissions every day for Primogems. Spend resin on the resource you need most: talent books, weapon ascension, or artifacts.
+        </div>
+        <div class="card-tags">
+          <span class="tag" style="background:rgba(232,96,76,0.12);color:var(--pyro);">Daily</span>
+          <span class="tag" style="background:rgba(200,169,110,0.1);color:var(--gold);">F2P Friendly</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ELEMENTAL REACTIONS -->
+  <section id="reactions">
+    <div class="section-header">
+      <h2>Elemental Reactions</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="reaction-grid">
+
+      <div class="reaction-card">
+        <div class="reaction-name">Vaporize</div>
+        <div class="reaction-formula" style="color:var(--pyro);">🔥 Pyro + 💧 Hydro</div>
+        <div class="reaction-desc">The strongest reaction. Hydro → Pyro gives 1.5× multiplier; Pyro → Hydro gives 2×. Build around this for massive burst damage.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Melt</div>
+        <div class="reaction-formula" style="color:var(--cryo);">❄ Cryo + 🔥 Pyro</div>
+        <div class="reaction-desc">Cryo → Pyro gives 2× damage; Pyro → Cryo gives 1.5×. Ganyu's charged shots melting are a meta staple for insane single-target damage.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Overloaded</div>
+        <div class="reaction-formula" style="color:var(--electro);">⚡ Electro + 🔥 Pyro</div>
+        <div class="reaction-desc">Causes an AoE Pyro explosion. Knocks lighter enemies away — great for clearing but can scatter enemies. Scales with Elemental Mastery.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Superconduct</div>
+        <div class="reaction-formula" style="color:var(--cryo);">❄ Cryo + ⚡ Electro</div>
+        <div class="reaction-desc">Reduces Physical RES by 40% for 12 seconds. Core reaction for any Physical DPS like Eula. Always pair with an Electro support.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Freeze</div>
+        <div class="reaction-formula" style="color:var(--hydro);">💧 Hydro + ❄ Cryo</div>
+        <div class="reaction-desc">Immobilizes enemies. Frozen enemies take 200% damage from Shatter. Great for Ayaka, Ganyu, and Kokomi teams. Makes Spiral Abyss much easier.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Swirl</div>
+        <div class="reaction-formula" style="color:var(--anemo);">🌀 Anemo + Any Element</div>
+        <div class="reaction-desc">Spreads and amplifies elements. Key use: trigger 4-piece Viridescent Venerer to shred elemental RES by 40%. Every team wants an Anemo support.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Quicken / Aggravate</div>
+        <div class="reaction-formula" style="color:var(--dendro);">🌿 Dendro + ⚡ Electro</div>
+        <div class="reaction-desc">Quicken creates a Quicken aura. Follow-up Electro triggers Aggravate (+15% flat DMG bonus). Dendro + Electro teams are among the strongest in the game.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Bloom / Burgeon</div>
+        <div class="reaction-formula" style="color:var(--dendro);">🌿 Dendro + 💧 Hydro</div>
+        <div class="reaction-desc">Creates Dendro Cores that explode after 6 seconds. Burgeon (adding Pyro) explodes them instantly in an AoE. Nilou's Bloom team is S-tier for crowd AoE.</div>
+      </div>
+
+      <div class="reaction-card">
+        <div class="reaction-name">Crystallize</div>
+        <div class="reaction-formula" style="color:var(--geo);">🪨 Geo + Any Element</div>
+        <div class="reaction-desc">Creates elemental shields. Geo characters like Zhongli provide near-unbreakable shields through crystallize. Great for keeping your DPS alive.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TEAM COMPS -->
+  <section id="teams">
+    <div class="section-header">
+      <h2>Meta Team Compositions</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header">
+        <div class="team-name">International (Childe + Xiangling)</div>
+        <span class="team-tier tier-s">S-TIER</span>
+      </div>
+      <div class="team-slots">
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(77,166,217,0.12);border-color:rgba(77,166,217,0.4);">🎯</div>
+          <div class="char-name">Childe</div>
+          <div class="char-role">Main DPS</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(232,96,76,0.12);border-color:rgba(232,96,76,0.4);">🔥</div>
+          <div class="char-name">Xiangling</div>
+          <div class="char-role">Sub DPS</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(176,108,212,0.12);border-color:rgba(176,108,212,0.4);">⚡</div>
+          <div class="char-name">Fischl / Beidou</div>
+          <div class="char-role">Sub DPS</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(93,201,164,0.12);border-color:rgba(93,201,164,0.4);">🌀</div>
+          <div class="char-name">Kazuha / Sucrose</div>
+          <div class="char-role">Support</div>
+        </div>
+      </div>
+      <div class="team-desc">One of the most powerful and popular teams. Childe applies Hydro, Xiangling's Guoba and Pyronado vaporize for massive damage. Kazuha swirls Pyro/Hydro to shred resistances via 4-piece VV. Extremely strong in Abyss chambers with grouped enemies.</div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header">
+        <div class="team-name">Freeze (Ayaka + Kokomi)</div>
+        <span class="team-tier tier-s">S-TIER</span>
+      </div>
+      <div class="team-slots">
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(126,205,232,0.12);border-color:rgba(126,205,232,0.4);">❄</div>
+          <div class="char-name">Ayaka</div>
+          <div class="char-role">Main DPS</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(77,166,217,0.12);border-color:rgba(77,166,217,0.4);">💧</div>
+          <div class="char-name">Kokomi</div>
+          <div class="char-role">Healer/Hydro</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(93,201,164,0.12);border-color:rgba(93,201,164,0.4);">🌀</div>
+          <div class="char-name">Kazuha</div>
+          <div class="char-role">VV Support</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(126,205,232,0.12);border-color:rgba(126,205,232,0.4);">🌨</div>
+          <div class="char-name">Shenhe / Rosaria</div>
+          <div class="char-role">Cryo Buffer</div>
+        </div>
+      </div>
+      <div class="team-desc">Freeze everything and slash through with Ayaka. Kokomi provides constant Hydro and healing, Kazuha groups and buffs, Shenhe boosts Cryo damage massively. Enemies stay permanently frozen, making this comp extremely safe and consistent.</div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header">
+        <div class="team-name">Quickbloom (Nahida + Raiden)</div>
+        <span class="team-tier tier-s">S-TIER</span>
+      </div>
+      <div class="team-slots">
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(124,184,74,0.12);border-color:rgba(124,184,74,0.4);">🌿</div>
+          <div class="char-name">Nahida</div>
+          <div class="char-role">Dendro Core</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(176,108,212,0.12);border-color:rgba(176,108,212,0.4);">⚡</div>
+          <div class="char-name">Raiden Shogun</div>
+          <div class="char-role">Electro DPS</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(77,166,217,0.12);border-color:rgba(77,166,217,0.4);">💧</div>
+          <div class="char-name">Yelan / Xingqiu</div>
+          <div class="char-role">Hydro Sub DPS</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(200,169,110,0.12);border-color:rgba(200,169,110,0.4);">✨</div>
+          <div class="char-name">Flex Healer</div>
+          <div class="char-role">Support</div>
+        </div>
+      </div>
+      <div class="team-desc">Nahida's Tri-Karma Purification constantly triggers Dendro reactions. Raiden applies Electro to trigger Quicken/Aggravate for bonus flat damage. Yelan's off-field Hydro creates Bloom cores for additional AoE. One of the most damage-dense teams in the current meta.</div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header">
+        <div class="team-name">Zhongli Shield + Any DPS</div>
+        <span class="team-tier tier-a">A-TIER</span>
+      </div>
+      <div class="team-slots">
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(212,169,76,0.12);border-color:rgba(212,169,76,0.4);">🪨</div>
+          <div class="char-name">Zhongli</div>
+          <div class="char-role">Shield / RES Shred</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(200,169,110,0.12);border-color:rgba(200,169,110,0.4);">⚔</div>
+          <div class="char-name">Main DPS</div>
+          <div class="char-role">Your Choice</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(200,169,110,0.12);border-color:rgba(200,169,110,0.4);">🎵</div>
+          <div class="char-name">Sub DPS</div>
+          <div class="char-role">Off-Field</div>
+        </div>
+        <div class="char-slot">
+          <div class="char-avatar" style="background:rgba(200,169,110,0.12);border-color:rgba(200,169,110,0.4);">💚</div>
+          <div class="char-name">Healer</div>
+          <div class="char-role">Support</div>
+        </div>
+      </div>
+      <div class="team-desc">Zhongli's jade shield is essentially unbreakable and reduces all elemental + physical RES by 20% via his pillar's petrify aura. Simply add him to any team for a massive safety and damage boost. Best universal support in the game.</div>
+    </div>
+
+  </section>
+
+  <!-- PRO TIPS -->
+  <section id="tips">
+    <div class="section-header">
+      <h2>Pro Tips for New Players</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="tip-list">
+
+      <div class="tip-item">
+        <div class="tip-num">01</div>
+        <div class="tip-content">
+          <h4>Don't spread your resources thin</h4>
+          <p>Level one main DPS to 90 before touching anyone else. Talent materials and mora are scarce — focus on one carry first, then build supports around them.</p>
+        </div>
+      </div>
+
+      <div class="tip-item">
+        <div class="tip-num">02</div>
+        <div class="tip-content">
+          <h4>Always run 4 elements in your team</h4>
+          <p>Mono-element teams miss out on powerful reactions. Even adding a single Anemo character (Kazuha, Sucrose, or free Sayu) unlocks 4-piece Viridescent Venerer, shredding enemy resistance by 40%.</p>
+        </div>
+      </div>
+
+      <div class="tip-item">
+        <div class="tip-num">03</div>
+        <div class="tip-content">
+          <h4>Save your Primogems for limited banners</h4>
+          <p>Standard banner characters (Diluc, Mona, Keqing, etc.) can be obtained from the standard banner or events over time. Limited 5-stars like Kazuha and Hu Tao only return occasionally — save for those.</p>
+        </div>
+      </div>
+
+      <div class="tip-item">
+        <div class="tip-num">04</div>
+        <div class="tip-content">
+          <h4>Learn enemy attack patterns</h4>
+          <p>Dodging at the right moment triggers a dash with i-frames (invincibility frames), making you immune to damage. Practice against Ruin Guards and weekly bosses — it's better than any shield.</p>
+        </div>
+      </div>
+
+      <div class="tip-item">
+        <div class="tip-num">05</div>
+        <div class="tip-content">
+          <h4>Elemental Mastery matters more than you think</h4>
+          <p>EM directly boosts reaction damage. For supports that trigger Swirl, Bloom, or Vaporize, stacking EM (800–1000+) can dramatically outperform raw ATK builds. Kazuha and Nahida love EM.</p>
+        </div>
+      </div>
+
+      <div class="tip-item">
+        <div class="tip-num">06</div>
+        <div class="tip-content">
+          <h4>Aim for 1:2 CRIT Rate to CRIT DMG ratio</h4>
+          <p>The golden rule: for every 1% CRIT Rate, aim for 2% CRIT DMG. A 70% CRIT Rate / 140% CRIT DMG stat line is a great target. Use the CRIT circlet artifact to hit these numbers efficiently.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="ornament">✦ ✦ ✦</div>
+  <p><strong style="color:var(--gold);">Teyvat Tactics</strong> — Community-driven Genshin Impact strategy resource</p>
+  <p style="margin-top:0.5rem;">Not affiliated with HoYoverse. Genshin Impact is developed and published by HoYoverse.</p>
+  <p style="margin-top:0.5rem;">Built with love for the Teyvat community 🎮</p>
+</footer>
+
+</body>
+</html>
